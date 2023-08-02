@@ -1,26 +1,29 @@
 ﻿using AzureBlob.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using AzureBlob.Services;
 
 namespace AzureBlob.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IContainerService _containerService;
+        private readonly IBlobService _blobService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IContainerService containerService, IBlobService blobService)
         {
-            _logger = logger;
+            _containerService = containerService;
+            _blobService = blobService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            return View(await _containerService.GetAllContainerAndBlobs());
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Images()
         {
-            return View();
+            return View(await _blobService.GetAllBlobsWithUri("privatecontainer"));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
